@@ -1,5 +1,5 @@
 'use strict'
-let words = [{"word":"поехали","sign":"plus"},{"word":"купили","sign":"plus"},{"word":"забрали","sign":"minus"},{"word":"дали","sign":"plus"}];
+let words = [];
 const audioYes  = new Audio('./audio/yes.mp3');
 const audioBeep = new Audio('./audio/bonus.mp3');
 const answer = rightAnswer();
@@ -21,7 +21,10 @@ function init() {
     /* in html attribure data-sign = "plus" */
     positive.dataset.sign = 'plus';
     negative.dataset.sign = 'minus';
-
+    positive.addEventListener("click", checkWord);
+    negative.addEventListener("click", checkWord);
+    positive.addEventListener("touch", checkWord);
+    negative.addEventListener("touch", checkWord);
     /* create drag & drop system */
     card = document.createElement("div");
     card.classList.add("card");
@@ -75,31 +78,35 @@ function addDragDrop (element) {
 }
 
 
-function dragstart_handler(ev) {
-    ev.dataTransfer.setData("text/plain", ev.target.id);
-    ev.dataTransfer.effectAllowed = "copyMove";
-    ev.dataTransfer.dropEffect = "copy";
+function dragstart_handler(event) {
+    event.dataTransfer.setData("text/plain", event.target.id);
+    event.dataTransfer.effectAllowed = "copyMove";
+    event.dataTransfer.dropEffect = "copy";
 }
 
 
-function dragover_handler(ev) {
-    ev.preventDefault();
-    ev.dataTransfer.dropEffect = "copy";
+function dragover_handler(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
 }
 
 
-function drop_handler(ev) {
-    ev.preventDefault();
-    const data = ev.dataTransfer.getData("text/plain");
-    const container = ev.target;
-    const card = document.getElementById(data);
+function drop_handler(e) {
+    e.preventDefault();
+    checkWord(e);      
+}
+
+
+function checkWord(event) {
+    const container = event.target;
+    const card = document.getElementById("id1");
 
     if (card.parentElement === container.parentElement) {
         return false;
     }
     if (card.dataset.sign === container.dataset.sign ) {
         answer.next();
-    }       
+    }  
 }
 
 function readIniFile(file)
